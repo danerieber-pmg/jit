@@ -1,6 +1,7 @@
 import Jira from "@danerieber/jira-get";
 import dayjs from "dayjs";
 dayjs().format();
+import { createObjectCsvWriter } from "csv-writer";
 
 const jira = new Jira(process.env.URL, process.env.EMAIL, process.env.TOKEN);
 const boardId = process.env.BOARD_ID;
@@ -57,4 +58,8 @@ results = results.map(({ day, points }) => ({
     sprint: sprints.filter(s => s.start <= day && day <= s.end)[0].name
 }));
 
-console.log(results);
+const csvWriter = createObjectCsvWriter({
+    path: './csv/velocity.csv',
+    header: Object.keys(results[0]).map(k => ({ id: k, title: k }))
+});
+await csvWriter.writeRecords(results);
