@@ -1,0 +1,24 @@
+{
+  "name": "jit",
+  "version": "1.0.0",
+  "description": "Jira In Tables",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/danerieber-pmg/jit.git"
+  },
+  "author": "Dane Rieber",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danerieber-pmg/jit/issues"
+  },
+  "homepage": "https://github.com/danerieber-pmg/jit#readme",
+  "dependencies": {
+    "@danerieber/jira-get": "^1.0.2",
+    "dayjs": "^1.11.9"
+  },
+  "type": "module"
+}
