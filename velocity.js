@@ -5,9 +5,8 @@ dayjs().format();
 const jira = new Jira(process.env.URL, process.env.EMAIL, process.env.TOKEN);
 const boardId = process.env.BOARD_ID;
 
-// maps field names -> field ides
 const fid = await jira.get('/rest/api/2/field')
-    .map(f => [f.name, f.id])
+    .map(f => [f.name, f.id])   // maps field names -> field ides
     .select(Object.fromEntries);
 
 let sprints = await jira.get(`/rest/agile/1.0/board/${boardId}/sprint`)
@@ -15,16 +14,17 @@ let sprints = await jira.get(`/rest/agile/1.0/board/${boardId}/sprint`)
         state: 'active,closed'
     })
     .select(r => r.values)
-    .filter(v => v.originBoardId == boardId)    // only get sprints on this specific board
-    .map(({id, name, startDate, endDate}) => ({id, name, start: dayjs(startDate), end: dayjs(endDate)}))
+    .filter(v => v.originBoardId == boardId)    // only get sprints that are actually on this specific board
+    .map(({ id, name, startDate, endDate }) =>
+        ({ id, name, start: dayjs(startDate), end: dayjs(endDate) })) // dayjs values are easier to deal with
     .all();
 
 const N_SPRINTS = 5;
-sprints = sprints.sort((a, b) => b.start - a.start).slice(0, N_SPRINTS).reverse();    // get N most recent sprints
+sprints = sprints.sort((a, b) => b.start - a.start).slice(0, N_SPRINTS).reverse();  // get N most recent sprints
 
-const DAY_FORMAT = 'YYYY-MM-DD'; // used for grouping by days
+const DAY_FORMAT = 'YYYY-MM-DD';    // used for grouping by days
 
-let allIssues = [];
+let allIssues = []; // collects all issues across all sprints
 for (const sprint of sprints) {
     const issues = await jira.get(`/rest/agile/1.0/board/${boardId}/sprint/${sprint.id}/issue`)
         .params({
@@ -32,7 +32,7 @@ for (const sprint of sprints) {
             fields: [fid['Story Points'], fid['Resolved']]
         })
         .select(r => r.issues)
-        .map(({fields}) => ({
+        .map(({ fields }) => ({
             points: fields[fid['Story Points']],
             resolved: dayjs(fields[fid['Resolved']]).format(DAY_FORMAT)
         }))
@@ -40,18 +40,18 @@ for (const sprint of sprints) {
     allIssues = allIssues.concat(issues);
 }
 
-const pointsPerDay = {}
+const pointsPerDay = {} // groups issues by day and aggregates story points
 for (const issue of allIssues) {
     if (!(issue.resolved.day in pointsPerDay)) pointsPerDay[issue.resolved] = 0;
     pointsPerDay[issue.resolved] += issue.points;
 }
 
-let results = [];
+let results = [];   // lists each day, the total completed story points, and the associated sprint
 for (const day in pointsPerDay) {
-    results.push({day: dayjs(day), points: pointsPerDay[day]});
+    results.push({ day: dayjs(day), points: pointsPerDay[day] });
 }
 results = results.sort((a, b) => a.day - b.day);
-results = results.map(({day, points}) => ({
+results = results.map(({ day, points }) => ({
     day: day.format(DAY_FORMAT),
     points,
     sprint: sprints.filter(s => s.start <= day && day <= s.end)[0].name
