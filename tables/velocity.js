@@ -55,8 +55,9 @@ results = results.sort((a, b) => a.day - b.day);
 results = results.map(({ day, points }) => ({
     day: day.format(DAY_FORMAT),
     points,
-    sprint: sprints.filter(s => s.start <= day && day <= s.end)[0].name
+    sprint: sprints.filter(s => s.start <= day && day <= s.end)[0]?.name
 }));
+results = results.filter(r => r.sprint)
 
 const csvWriter = createObjectCsvWriter({
     path: './csv/velocity.csv',
