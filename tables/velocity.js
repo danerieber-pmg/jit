@@ -5,7 +5,6 @@ import { createObjectCsvWriter } from "csv-writer";
 
 const jira = new Jira(process.env.URL, process.env.EMAIL, process.env.TOKEN);
 const boardId = process.env.BOARD_ID;
-
 const fid = await jira.get('/rest/api/2/field')
     .map(f => [f.name, f.id])   // maps field names -> field ides
     .select(Object.fromEntries);
@@ -27,14 +26,7 @@ const DAY_FORMAT = 'YYYY-MM-DD';    // used for grouping by days
 
 let allIssues = []; // collects all issues across all sprints
 for (const sprint of sprints) {
-    const issues = await jira.get(`/rest/agile/1.0/board/${boardId}/sprint/${sprint.id}/issue`)
-        .params({
-            jql: `status = Completed and "Story Points" is not empty`,
-            fields: [fid['Story Points'], fid['Resolved']]
-        })
-        .select(r => r.issues)
-        .map(({ fields }) => ({
-            points: fields[fid['Story Points']],
+    const issues = await jira.get(`/rest/agile/1.0/board/${boardId}/sprint/${sprint.id}/issue`) .params({ jql: `status = Completed and "Story Points" is not empty`, fields: [fid['Story Points'], fid['Resolved']] }) .select(r => r.issues) .map(({ fields }) => ({ points: fields[fid['Story Points']],
             resolved: dayjs(fields[fid['Resolved']]).format(DAY_FORMAT)
         }))
         .all();
