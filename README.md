@@ -9,7 +9,6 @@ Create an script to set environment variables, and replace them with your inform
 
 ```sh
 mkdir -p bin/dev
-touch bin/dev/env.sh
 echo "export URL="https://{myserver}.atlassian.net"
 export EMAIL="{email}"
 export TOKEN="{token}"
@@ -30,6 +29,8 @@ npm i
 ```
 
 ## Run Scripts
+
+> Note: create the `csv` folder for scripts that output csv files
 
 ```sh
 . bin/dev/env.sh && node myScript.js
