@@ -17,7 +17,8 @@
   },
   "homepage": "https://github.com/danerieber-pmg/jit#readme",
   "dependencies": {
-    "@danerieber/jira-get": "^1.0.2",
+    "@danerieber/jira-get": "^1.0.3",
+    "aws-sdk": "^2.1414.0",
     "csv-writer": "^1.6.0",
     "dayjs": "^1.11.9"
   },
