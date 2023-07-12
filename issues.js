@@ -35,24 +35,24 @@ const results = await getAllIssues();
 
 
 
-async function writeToCsv(results) {
+async function writeToCsv() {
     await createObjectCsvWriter({
         path: CSV_PATH,
         header: Object.keys(results[0]).map(k => ({ id: k, title: k }))
     })
         .writeRecords(results);
 }
-await writeToCsv(results);
+await writeToCsv();
 
 
 
-function sendToS3(csvPath) {
+function sendToS3() {
     const s3 = new AWS.S3();
     const fileStream = fs.createReadStream(csvPath);
     fileStream.on('error', console.error);
     const uploadParams = {
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key: csvPath,
+        Key: CSV_PATH,
         Body: fileStream
     };
     s3.upload(uploadParams, (err, data) => {
@@ -64,4 +64,4 @@ function sendToS3(csvPath) {
         }
     });
 }
-sendToS3(CSV_PATH);
+sendToS3();
