@@ -4,7 +4,8 @@
   "description": "Jira In Tables",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "ncc build issues.js -o dist"
   },
   "repository": {
     "type": "git",
@@ -22,5 +23,8 @@
     "csv-writer": "^1.6.0",
     "dayjs": "^1.11.9"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@vercel/ncc": "^0.36.1"
+  }
 }
