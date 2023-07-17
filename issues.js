@@ -48,7 +48,7 @@ await writeToCsv();
 
 function sendToS3() {
     const s3 = new AWS.S3();
-    const fileStream = fs.createReadStream(csvPath);
+    const fileStream = fs.createReadStream(CSV_PATH);
     fileStream.on('error', console.error);
     const uploadParams = {
         Bucket: process.env.AWS_BUCKET_NAME,
